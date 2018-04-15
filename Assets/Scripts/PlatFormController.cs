@@ -16,11 +16,13 @@ public class PlatFormController : MonoBehaviour
     public LayerMask GroundLayers;
     public Transform GroundChecker;
     public AudioSource SwordSound;
+    public PolygonCollider2D SwordCollider;
     SpriteRenderer spRenderer;
     float shift = 0.0f;
     // Use this for initialization
     void Start()
     {
+        SwordCollider.enabled = false;
         Player = GetComponent<Rigidbody2D>();
         spRenderer = GetComponentInChildren<SpriteRenderer>();
         if (this.tag == "Triangle") shift = Camera.main.orthographicSize + 3 + Random.Range(-1f, 3f);
@@ -63,7 +65,7 @@ public class PlatFormController : MonoBehaviour
                 //   Player.velocity = new Vector2(Player.velocity.x, 10);
                 //cube.AddForce(new Vector2(0, jump), ForceMode2D.Impulse);         
             }
-            if ((Input.GetKeyDown(KeyCode.Joystick1Button3)||Input.GetButtonDown("Fire1")) && id == 1)
+            if ((Input.GetKeyDown(KeyCode.Joystick1Button3)||Input.GetButtonDown("Fire1")) && id == 1 &&!attack)
             {
                 // Debug.Log("firiing");
                 SwordSound.Play();
@@ -71,7 +73,7 @@ public class PlatFormController : MonoBehaviour
                 
             }
             else
-            if ((Input.GetKeyDown(KeyCode.Joystick2Button3) || Input.GetButtonDown("Fire2")) && id == 2)
+            if ((Input.GetKeyDown(KeyCode.Joystick2Button3) || Input.GetButtonDown("Fire2")) && id == 2 &&!attack )
             {
                 // Debug.Log("firiing2");
                 SwordSound.Play();
@@ -104,10 +106,12 @@ public class PlatFormController : MonoBehaviour
     public void SetAttackTrue()
     {
         attack = true;
+        SwordCollider.enabled = true;
     }
     public void SetAttackFalse()
     {
         attack = false;
+        SwordCollider.enabled = false;
     }
     //public void  explode()
     //{

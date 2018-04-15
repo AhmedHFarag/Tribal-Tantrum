@@ -8,7 +8,7 @@ public class Attack_Sword : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D Obj)
     {
         //Debug.Log(Obj.gameObject.tag);
-        if (this.gameObject.transform.root.gameObject.active == true)
+        if (this.gameObject.transform.root.gameObject.activeInHierarchy == true)
 
             if (Obj.gameObject.tag == EnemyTag && 
                 Obj.gameObject.transform.root.gameObject.GetComponent<PlatFormController>().Status==PlatFormController._Status.Fight &&
@@ -25,7 +25,7 @@ public class Attack_Sword : MonoBehaviour {
                     GameManagerr.GetComponent<GameManager>().WakeNewTriangle();
                     GameManagerr.GetComponent<GameManager>().AddBox(Obj.transform.position);
                 }
-                Obj.gameObject.transform.root.gameObject.active = false;
+                Obj.gameObject.transform.root.gameObject.SetActive(false);
                 //transform.parent.parent.parent
                 //Destroy(Obj.gameObject);
                 Destroy(Obj.gameObject.transform.root.gameObject);
