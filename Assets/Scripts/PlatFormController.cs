@@ -19,6 +19,7 @@ public class PlatFormController : MonoBehaviour
     public PolygonCollider2D SwordCollider;
     SpriteRenderer spRenderer;
     float shift = 0.0f;
+	
     // Use this for initialization
     void Start()
     {
@@ -43,15 +44,15 @@ public class PlatFormController : MonoBehaviour
             if (Player.transform.position.x < (Camera.main.transform.position.x - Camera.main.orthographicSize-1))
                 Player.transform.position = new Vector2((Camera.main.transform.position.x - Camera.main.orthographicSize-1), Player.transform.position.y);
 
-            Player.velocity = new Vector2(xAxis * Speed, Player.velocity.y);
+            Player.velocity = new Vector2(xAxis * Speed *GameManager.Instance.Dir, Player.velocity.y);
             
             Player.GetComponent<Animator>().SetFloat("X_Speed", Mathf.Abs(Player.velocity.x));
             //jump = Input.GetAxis(string.Format("P{0}Jump", id));
-            if (xAxis > 0)
+            if (xAxis*GameManager.Instance.Dir > 0)
             {
                 Player.GetComponent<Transform>().localScale = new Vector3(-1, 1, 1);
             }
-            if (xAxis < -0.1)
+            if (xAxis * GameManager.Instance.Dir < -0.1)
             {
                 Player.GetComponent<Transform>().localScale = new Vector3(1, 1, 1);
             }
@@ -80,13 +81,13 @@ public class PlatFormController : MonoBehaviour
                 Player.GetComponent<Animator>().SetTrigger("Attack");
                
             }
-            if ((Input.GetKeyDown(KeyCode.Joystick1Button2)|| Input.GetButtonDown("Jump1")) && id == 1 && grounded)
+            if ((Input.GetKeyDown(KeyCode.Joystick1Button2)|| Input.GetButtonDown("Jump1")) && id == 1 && grounded && GameManager.Instance.CanJump)
             {
                 Player.velocity = new Vector2(Player.velocity.x, 10);
                // Player.GetComponent<Animator>().SetTrigger("Jump");
                 //Debug.Log("jumping");
             }
-            if ((Input.GetKeyDown(KeyCode.Joystick2Button2) || Input.GetButtonDown("Jump2")) && id == 2 && grounded)
+            if ((Input.GetKeyDown(KeyCode.Joystick2Button2) || Input.GetButtonDown("Jump2")) && id == 2 && grounded && GameManager.Instance.CanJump)
             {
                 Player.velocity = new Vector2(Player.velocity.x, 10);
                 Player.GetComponent<Animator>().SetTrigger("Jump");

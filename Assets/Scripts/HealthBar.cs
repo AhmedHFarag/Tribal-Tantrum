@@ -18,7 +18,7 @@ public class HealthBar : MonoBehaviour {
         if (Name == "Triangle")
         {
 
-            if (Game.GetComponent<GameManager>().Triangles.Count + 1 < count)
+            if (GameManager.Instance.Triangles.Count + 1 < count)
                 this.gameObject.transform.localPosition = outpos;
             else
             {
@@ -29,7 +29,7 @@ public class HealthBar : MonoBehaviour {
         else
         {
             
-            if (Game.GetComponent<GameManager>().Boxes.Count + 1 < count)
+            if (GameManager.Instance.Boxes.Count + 1 < count)
                 this.gameObject.transform.localPosition = outpos;
             else
             {

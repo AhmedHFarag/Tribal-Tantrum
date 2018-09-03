@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
+	public static GameManager Instance;
     public GameObject Box;
     public GameObject Tri;
     public GameObject cam;
@@ -12,25 +14,43 @@ public class GameManager : MonoBehaviour {
     public float BigEggRotation = 0;
     public Stack Boxes = new Stack();
     public Stack Triangles = new Stack();
-     
-    // Use this for initialization
-    void Start()
+    public GameObject StartGameButton;
+	public Text ModeText;
+	public GameObject Darkness;
+	public float ModeChangeDelay = 30f;
+	public float ModeChangeDuration = 30f;
+	[HideInInspector]
+	public bool CanJump = true;
+	public int Dir = 1;
+	// Use this for initialization
+	void Start()
     {
-        GameObject temp;
-        //BigEggRotation = BigEgg.GetComponent<Transform>().eulerAngles.z;
-        for (int i = 0; i < 3; i++)
-        {
-            
-            temp = (GameObject)Instantiate(Box, new Vector2(i - 7, 0f), Quaternion.identity);
-            temp.gameObject.active = true;
-            Boxes.Push(temp);
-            temp = (GameObject)Instantiate(Tri, new Vector2(7 - i, 0f), Quaternion.identity);
-            temp.gameObject.active = true;
-            Triangles.Push(temp);
-        }
-        WakeNewBox();
-        WakeNewTriangle();
+		if (Instance==null) {
+			Instance = this;
+		} else {
+			Destroy(this);
+		}
     }
+	public void StartGame() {
+		GameObject temp;
+		//BigEggRotation = BigEgg.GetComponent<Transform>().eulerAngles.z;
+		for (int i = 0; i < 3; i++) {
+
+			temp = (GameObject)Instantiate(Box, new Vector2(i - 7, 0f), Quaternion.identity);
+			temp.gameObject.active = true;
+			Boxes.Push(temp);
+			temp = (GameObject)Instantiate(Tri, new Vector2(7 - i, 0f), Quaternion.identity);
+			temp.gameObject.active = true;
+			Triangles.Push(temp);
+		}
+		ResetModes();
+
+		WakeNewBox();
+		WakeNewTriangle();
+		StopAllCoroutines();
+		StartGameButton.SetActive(false);
+		StartCoroutine(ModeChange());
+	}
     // Update is called once per frame
     void Update()
     {
@@ -50,7 +70,9 @@ public class GameManager : MonoBehaviour {
         }catch(System.Exception e)
         {
             Debug.Log("Triangles Winnnnnnnnnnnnnnnn");
-            SceneManager.LoadScene("Tri_Win");
+			ResetModes();
+
+			SceneManager.LoadScene("Tri_Win");
             //cam.active = false;
             //Application.Quit();
         }
@@ -66,6 +88,7 @@ public class GameManager : MonoBehaviour {
         }catch(System.Exception e)
         {
             Debug.Log("Cube Winnnnnnnnnnn");
+			ResetModes();
             SceneManager.LoadScene("Box_Win");
            // cam.active = false;
             //Application.Quit();
@@ -96,4 +119,48 @@ public class GameManager : MonoBehaviour {
         temp.GetComponent<PlatFormController>().Status = PlatFormController._Status.Idel;
         Boxes.Push(temp);
     }
+	void ResetModes() {
+		Time.timeScale = 1;
+		CanJump = true;
+		Dir = 1;
+		Darkness.SetActive(false);
+	}
+	IEnumerator ModeChange() {
+		while (true) {
+			yield return new WaitForSeconds(ModeChangeDelay);
+			int r = Random.Range(0, 5);
+			switch (r) {
+				case 0:
+					Time.timeScale = 2;
+					ModeText.text = "Speed Up";
+					Debug.Log("Speed up");
+					break;
+				case 1:
+					Time.timeScale = 0.5f;
+					ModeText.text = "Speed Down";
+					Debug.Log("Slow down");
+					break;
+				case 2:
+					//noJumping
+					ModeText.text = "No Jump";
+					CanJump = false;
+					break;
+				case 3:
+					//Reverse controls
+					ModeText.text = "Reverse";
+					Dir = -1;
+					break;
+				case 4:
+					ModeText.text = "Darkness";
+					Darkness.SetActive(true);
+					break;
+				default:
+					break;
+			}
+			ModeText.gameObject.GetComponent<Animator>().SetTrigger("Change");
+			yield return new WaitForSeconds(ModeChangeDuration*Time.timeScale);
+			ResetModes();
+		}
+		yield return null;
+	}
 }
